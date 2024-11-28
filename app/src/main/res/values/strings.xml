@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ChatbotAvalon</string>
+    <string name="edit_text">Type a message</string>
+    <string name="button_send">Send</string>
+</resources>

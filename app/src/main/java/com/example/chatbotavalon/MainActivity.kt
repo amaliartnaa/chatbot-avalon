@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                     chatList.add(ChatMessage(botReply, false))
                     chatAdapter.notifyItemInserted(chatList.size - 1)
                     recyclerView.scrollToPosition(chatList.size - 1)
-                }, 2000)
+                }, 1000)
             }
         }
     }
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private fun getBotReply(message: String): String {
         return when {
             message.contains("halo", true) -> "Halo! Ada yang bisa saya bantu?"
-            message.contains("apa kabar", true) -> "Saya bot, selalu baik! Kamu?"
+            message.contains("apa kabar", true) -> "Saya baik-baik saja! Kamu?"
             message.contains("bye", true) -> "Sampai jumpa!"
             else -> "Maaf, saya tidak mengerti."
         }

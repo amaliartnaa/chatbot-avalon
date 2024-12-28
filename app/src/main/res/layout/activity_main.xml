@@ -1,57 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawerLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1F2544"
-    android:padding="8dp">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <!-- RecyclerView untuk menampilkan chat -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
-
-    <!-- Bagian input dan tombol send -->
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#474F7A"
-        android:padding="8dp"
-        android:layout_marginTop="4dp"
-        android:elevation="4dp"
-        android:clipToPadding="false"
-        android:gravity="center_vertical"
-        >
+        android:layout_height="match_parent"
+        android:background="#000000">
 
-        <!-- Input field untuk pesan -->
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#2C3E50"
+            android:elevation="4dp"
+            app:navigationIcon="@drawable/ic_menu"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:titleTextColor="#FFFFFF" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_edit_text"
-            android:hint="@string/edit_text"
-            android:padding="12dp"
-            android:textColor="#000000"
-            android:textColorHint="#81689D"
-            android:maxLines="4"
-            android:gravity="top"
-            android:inputType="textMultiLine" />
+            android:scrollbars="vertical" />
 
-        <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_send"
-            android:background="@drawable/circle_background"
-            android:scaleType="centerInside"
-            android:contentDescription="@string/button_send"
-            android:layout_marginStart="8dp"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#474F7A"
+            android:padding="8dp"
+            android:elevation="4dp"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:autofillHints=""
+                android:background="@drawable/rounded_edit_text"
+                android:hint="@string/edit_text"
+                android:padding="12dp"
+                android:textColor="#000000"
+                android:textColorHint="#81689D"
+                android:maxLines="4"
+                android:gravity="top"
+                android:inputType="textMultiLine" />
+
+            <ImageButton
+                android:id="@+id/sendButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_send"
+                android:background="@drawable/circle_background"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/button_send"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sidebar"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#28282B"
+        android:padding="16dp"
+        android:layout_gravity="start">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/history"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:paddingBottom="8dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

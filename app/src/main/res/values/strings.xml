@@ -9,4 +9,10 @@
     <string name="regist_title">Register</string>
     <string name="name_hint">Full Name</string>
     <string name="login_redirect">Already have an account? Login</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="sidebar_title">ChatBot</string>
+    <string name="hamburger_menu">Hamburger Menu</string>
+    <string name="avalon_ai">Avalon AI</string>
+    <string name="history">History</string>
 </resources>

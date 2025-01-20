@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#2C3E50"
+            android:background="#28282B"
             android:elevation="4dp"
             app:navigationIcon="@drawable/ic_menu"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="#474F7A"
+            android:background="#28282B"
             android:padding="8dp"
             android:elevation="4dp"
             android:gravity="center_vertical">
@@ -48,8 +48,7 @@
                 android:background="@drawable/circle_background"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/button_add"
-                android:layout_marginEnd="8dp"
-                />
+                android:layout_marginEnd="8dp" />
 
             <EditText
                 android:id="@+id/editText"
@@ -61,7 +60,7 @@
                 android:hint="@string/edit_text"
                 android:padding="12dp"
                 android:textColor="#000000"
-                android:textColorHint="#81689D"
+                android:textColorHint="#0077B6"
                 android:maxLines="4"
                 android:gravity="top"
                 android:inputType="textMultiLine" />
@@ -87,18 +86,37 @@
         android:padding="16dp"
         android:layout_gravity="start">
 
-        <TextView
+        <!-- LinearLayout horizontal untuk TextView dan ImageButton -->
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/history"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:paddingBottom="8dp" />
+            android:gravity="start|center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/history"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:paddingBottom="8dp" />
+
+            <ImageButton
+                android:id="@+id/addTopicButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_add"
+                android:background="@drawable/circle_background"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/button_add_topic"
+                android:layout_marginStart="100dp" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/historyRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

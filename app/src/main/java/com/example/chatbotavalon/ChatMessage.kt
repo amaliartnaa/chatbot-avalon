@@ -1,6 +1,6 @@
 package com.example.chatbotavalon
 
 data class ChatMessage(
-    val message: String,
+    var message: String,
     val isUser: Boolean
 )

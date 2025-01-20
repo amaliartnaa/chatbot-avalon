@@ -16,4 +16,5 @@
     <string name="avalon_ai">Avalon AI</string>
     <string name="history">History</string>
     <string name="button_add">Add Attachment</string>
+    <string name="button_add_topic">Buat Topik Baru\n</string>
 </resources>

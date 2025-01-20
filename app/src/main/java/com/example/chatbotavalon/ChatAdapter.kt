@@ -6,7 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ChatAdapter(private val chatList: List<ChatMessage>) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
+class ChatAdapter(
+    private val chatList: MutableList<ChatMessage>,
+    private val onMessageClick: (ChatMessage, Int) -> Unit
+) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val userTextView: TextView = view.findViewById(R.id.userMessage)
@@ -32,6 +35,26 @@ class ChatAdapter(private val chatList: List<ChatMessage>) : RecyclerView.Adapte
             holder.botTextView.visibility = View.VISIBLE
             holder.userTextView.visibility = View.GONE
         }
+
+        holder.itemView.setOnClickListener {
+            onMessageClick(chat, position)
+        }
+    }
+
+    fun updateData(newChatList: List<ChatMessage>) {
+        chatList.clear()
+        chatList.addAll(newChatList)
+        notifyDataSetChanged()
+    }
+
+    fun removeMessage(position: Int) {
+        chatList.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    fun editMessage(position: Int, newMessage: String) {
+        chatList[position].message = newMessage
+        notifyItemChanged(position)
     }
 }
 

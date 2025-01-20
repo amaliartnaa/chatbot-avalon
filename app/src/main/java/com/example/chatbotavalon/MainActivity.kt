@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 handleFile("Image selected: $fileUri")
             }
         }
+
         pickFileLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -62,63 +64,92 @@ class MainActivity : AppCompatActivity() {
                 handleFile("Audio recorded: $fileUri")
             }
         }
+
+        setupViewsAndAdapters()
+        setupToolbarAndDrawer()
+
         plusButton = findViewById(R.id.plusButton)
         plusButton.setOnClickListener {
             showAttachmentOptions()
         }
 
+        plusButton = findViewById(R.id.addTopicButton)
+        plusButton.setOnClickListener {
+            showNewTopicDialog()
+        }
+    }
+
+    private fun setupViewsAndAdapters() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val editText = findViewById<EditText>(R.id.editText)
         val sendButton = findViewById<ImageButton>(R.id.sendButton)
 
-        chatAdapter = ChatAdapter(chatList)
+        chatAdapter = ChatAdapter(chatList) { chatMessage, position ->
+            showEditOrDeleteDialog(position)
+        }
+
         recyclerView.adapter = chatAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         drawerLayout = findViewById(R.id.drawerLayout)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        historyAdapter = HistoryAdapter(generateDummyHistory())
+
+        historyAdapter = HistoryAdapter(
+            historyList,
+            onEditClick = { selectedItem ->
+                showEditDialog(selectedItem)
+            },
+            onDeleteClick = { selectedItem ->
+                deleteHistoryItem(selectedItem)
+            }
+        )
         historyRecyclerView.adapter = historyAdapter
 
         sendButton.setOnClickListener {
             val userMessage = editText.text.toString()
             if (userMessage.isNotBlank()) {
-                chatList.add(ChatMessage(userMessage, true))
-                chatAdapter.notifyItemInserted(chatList.size - 1)
-                historyList.add(userMessage)
-                historyAdapter.notifyItemInserted(historyList.size -1)
-                editText.text.clear()
-                recyclerView.scrollToPosition(chatList.size - 1)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val botReply = getBotReply(userMessage)
-                    chatList.add(ChatMessage(botReply, false))
-                    chatAdapter.notifyItemInserted(chatList.size - 1)
-                    recyclerView.scrollToPosition(chatList.size - 1)
-                }, 1000)
+                sendMessage(userMessage, recyclerView, editText)
             }
         }
+    }
 
+    private fun setupToolbarAndDrawer() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.open, R.string.close
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-            }
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
             override fun onDrawerOpened(drawerView: View) {
                 historyRecyclerView.visibility = View.VISIBLE
             }
             override fun onDrawerClosed(drawerView: View) {
                 historyRecyclerView.visibility = View.GONE
             }
-            override fun onDrawerStateChanged(newState: Int) {
-
-            }
+            override fun onDrawerStateChanged(newState: Int) {}
         })
+    }
+
+    private fun sendMessage(message: String, recyclerView: RecyclerView, editText: EditText) {
+        chatList.add(ChatMessage(message, true))
+        chatAdapter.notifyItemInserted(chatList.size - 1)
+        historyList.add(message)
+        historyAdapter.notifyItemInserted(historyList.size - 1)
+        editText.text.clear()
+        recyclerView.scrollToPosition(chatList.size - 1)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val botReply = getBotReply(message)
+            chatList.add(ChatMessage(botReply, false))
+            chatAdapter.notifyItemInserted(chatList.size - 1)
+            recyclerView.scrollToPosition(chatList.size - 1)
+        }, 1000)
     }
 
     private fun getBotReply(message: String): String {
@@ -128,15 +159,6 @@ class MainActivity : AppCompatActivity() {
             message.contains("bye", true) -> "Sampai jumpa!"
             else -> "Maaf, saya tidak mengerti."
         }
-    }
-
-    private fun generateDummyHistory(): List<String> {
-        return listOf(
-            "Masakan enak di Indonesia",
-            "Klasifikasi IQ",
-            "Jenis vision di genshin impact",
-            "Bedanya initiator dan sentinel di valorant"
-        )
     }
 
     private fun showAttachmentOptions() {
@@ -152,22 +174,89 @@ class MainActivity : AppCompatActivity() {
             }
             .show()
     }
+
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         pickImageLauncher.launch(intent)
     }
+
     private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "*/*"
         }
         pickFileLauncher.launch(intent)
     }
+
     private fun recordVoiceNote() {
         val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
         recordVoiceLauncher.launch(intent)
     }
+
     private fun handleFile(message: String) {
         chatList.add(ChatMessage(message, false))
         chatAdapter.notifyItemInserted(chatList.size - 1)
+    }
+
+    private fun showEditOrDeleteDialog(position: Int) {
+        val chatMessage = chatList[position]
+        AlertDialog.Builder(this)
+            .setTitle("Edit or Delete")
+            .setItems(arrayOf("Edit", "Delete")) { _, which ->
+                when (which) {
+                    0 -> showEditDialog(chatMessage.message)
+                    1 -> {
+                        chatList.removeAt(position)
+                        chatAdapter.notifyItemRemoved(position)
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun showEditDialog(item: String) {
+        val editText = EditText(this)
+        editText.setText(item)
+
+        AlertDialog.Builder(this)
+            .setTitle("Edit History")
+            .setView(editText)
+            .setPositiveButton("Save") { _, _ ->
+                val newValue = editText.text.toString()
+                val index = historyList.indexOf(item)
+                if (index != -1) {
+                    historyList[index] = newValue
+                    historyAdapter.notifyItemChanged(index)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteHistoryItem(item: String) {
+        val index = historyList.indexOf(item)
+        if (index != -1) {
+            historyList.removeAt(index)
+            historyAdapter.notifyItemRemoved(index)
+        }
+    }
+
+    private fun showNewTopicDialog() {
+        val input = EditText(this)
+        AlertDialog.Builder(this)
+            .setTitle("Tambah Topik Baru")
+            .setView(input)
+            .setPositiveButton("Tambah") { _, _ ->
+                val topic = input.text.toString()
+                if (topic.isNotBlank()) {
+                    addNewTopicToHistory(topic)
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun addNewTopicToHistory(topic: String) {
+        historyList.add(topic)
+        historyAdapter.notifyItemInserted(historyList.size - 1)
     }
 }

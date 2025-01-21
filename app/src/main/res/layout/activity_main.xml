@@ -79,14 +79,13 @@
 
     <LinearLayout
         android:id="@+id/sidebar"
-        android:layout_width="250dp"
+        android:layout_width="290dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#28282B"
         android:padding="16dp"
         android:layout_gravity="start">
 
-        <!-- LinearLayout horizontal untuk TextView dan ImageButton -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -103,13 +102,13 @@
 
             <ImageButton
                 android:id="@+id/addTopicButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:src="@drawable/ic_add"
-                android:background="@drawable/circle_background"
+                android:background="@drawable/ic_add"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/button_add_topic"
-                android:layout_marginStart="100dp" />
+                android:layout_marginStart="150dp" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -117,6 +116,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

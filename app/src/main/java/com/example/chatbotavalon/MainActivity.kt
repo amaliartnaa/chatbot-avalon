@@ -1,15 +1,15 @@
 package com.example.chatbotavalon
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -19,6 +19,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chatbotavalon.data.dao.PesanDao
+import com.example.chatbotavalon.data.dao.TopikDao
+import com.example.chatbotavalon.data.dao.UserDao
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +32,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var historyAdapter: HistoryAdapter
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var historyRecyclerView: RecyclerView
-
     private lateinit var plusButton: ImageButton
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
     private lateinit var pickFileLauncher: ActivityResultLauncher<Intent>
     private lateinit var recordVoiceLauncher: ActivityResultLauncher<Intent>
+    private lateinit var database: AppDatabase
+    private lateinit var topikDao: TopikDao
+    private lateinit var pesanDao: PesanDao
+    private lateinit var userDao: UserDao
 
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -76,6 +84,33 @@ class MainActivity : AppCompatActivity() {
         plusButton = findViewById(R.id.addTopicButton)
         plusButton.setOnClickListener {
             showNewTopicDialog()
+        }
+
+        database = AppDatabase.getDatabase(this)
+        topikDao = database.topikDao()
+        pesanDao = database.pesanDao()
+        userDao = database.userDao()
+
+        val sidebar = findViewById<LinearLayout>(R.id.sidebar)
+
+        val userId = 1
+        CoroutineScope(Dispatchers.IO).launch {
+            val topikList = topikDao.ambilTopikByUser(userId)
+            withContext(Dispatchers.Main) {
+                topikList.forEach { topik ->
+                    val textView = TextView(this@MainActivity)
+                    textView.text = topik.nama
+                    textView.setOnClickListener {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val pesanList = pesanDao.ambilPesanByTopik(topik.id)
+                            withContext(Dispatchers.Main) {
+                                pesanList.forEach { Log.d("Pesan", it.isi) }
+                            }
+                        }
+                    }
+                    sidebar.addView(textView)
+                }
+            }
         }
     }
 

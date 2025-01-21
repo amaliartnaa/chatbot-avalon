@@ -7,9 +7,12 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.util.Patterns
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
@@ -18,7 +21,10 @@ class LoginActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
+        val emailEditText = findViewById<EditText>(R.id.emailEditText)
+        val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val registerTextView = findViewById<TextView>(R.id.registerRedirect)
+        val loginButton = findViewById<Button>(R.id.loginButton)
 
         val spannable = SpannableString("Don't have an account? Register")
 
@@ -37,11 +43,19 @@ class LoginActivity : AppCompatActivity(){
         registerTextView.text = spannable
         registerTextView.movementMethod = LinkMovementMethod.getInstance()
 
-        val loginButton = findViewById<Button>(R.id.loginButton)
         loginButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+            val email = emailEditText.text.toString().trim()
+            val password  = passwordEditText.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
+            } else {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 }

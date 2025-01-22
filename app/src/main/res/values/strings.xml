@@ -17,4 +17,5 @@
     <string name="history">History</string>
     <string name="button_add">Add Attachment</string>
     <string name="button_add_topic">Buat Topik Baru\n</string>
+    <string name="logout">Log Out</string>
 </resources>

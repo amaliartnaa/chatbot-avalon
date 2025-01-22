@@ -9,11 +9,14 @@ import com.example.chatbotavalon.data.entity.User
 @Dao
 interface UserDao {
     @Insert
-    fun tambahUser(user: User)
+    suspend fun tambahUser(user: User)
 
     @Query("SELECT * FROM User")
-    fun ambilSemuaUser(): List<User>
+    suspend fun ambilSemuaUser(): List<User>
+
+    @Query("SELECT * FROM User WHERE email = :email")
+    suspend fun ambilUserByEmail(email: String): User?
 
     @Delete
-    fun hapusUser(user: User)
+    suspend fun hapusUser(user: User)
 }

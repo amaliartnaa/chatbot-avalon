@@ -15,11 +15,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.chatbotavalon.data.entity.User
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity(){
+    private lateinit var appDatabase: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_activity)
+
+        appDatabase = AppDatabase.getDatabase(this)
 
         val fullNameEditText = findViewById<EditText>(R.id.nameEditText)
         val emailEditText = findViewById<EditText>(R.id.registerEmailEditText)
@@ -31,8 +38,7 @@ class RegisterActivity : AppCompatActivity(){
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
             }
         }
 
@@ -56,11 +62,22 @@ class RegisterActivity : AppCompatActivity(){
             } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show()
             } else {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+                val user = User(
+                    id = 0,
+                    name = fullName,
+                    email = email,
+                    password = password
+                )
+                lifecycleScope.launch {
+                    val database = AppDatabase.getDatabase(this@RegisterActivity)
+                    database.userDao().tambahUser(user)
 
+                    Toast.makeText(this@RegisterActivity, "Registration Successful!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            }
         }
     }
 }
